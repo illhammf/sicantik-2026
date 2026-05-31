@@ -3,31 +3,50 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\KategoriMenuResource\Pages;
-use App\Filament\Admin\Resources\KategoriMenuResource\RelationManagers;
 use App\Models\KategoriMenu;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class KategoriMenuResource extends Resource
 {
     protected static ?string $model = KategoriMenu::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-tag';
+
+    protected static ?string $navigationGroup = 'Manajemen Catering';
+
+    protected static ?string $navigationLabel = 'Kategori Menu';
+
+    protected static ?string $modelLabel = 'Kategori Menu';
+
+    protected static ?string $pluralModelLabel = 'Kategori Menu';
+
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_kategori')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Textarea::make('deskripsi')
-                    ->columnSpanFull(),
+                Forms\Components\Section::make('Informasi Kategori Menu')
+                    ->description('Kelola kategori menu catering seperti nasi box, prasmanan, snack box, dan lainnya.')
+                    ->schema([
+                        Forms\Components\TextInput::make('nama_kategori')
+                            ->label('Nama Kategori')
+                            ->placeholder('Contoh: Nasi Box')
+                            ->required()
+                            ->maxLength(255)
+                            ->unique(ignoreRecord: true),
+
+                        Forms\Components\Textarea::make('deskripsi')
+                            ->label('Deskripsi')
+                            ->placeholder('Masukkan deskripsi singkat kategori menu')
+                            ->rows(4)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns(1),
             ]);
     }
 
@@ -36,25 +55,53 @@ class KategoriMenuResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_kategori')
-                    ->searchable(),
+                    ->label('Nama Kategori')
+                    ->searchable()
+                    ->sortable()
+                    ->weight('bold'),
+
+                Tables\Columns\TextColumn::make('deskripsi')
+                    ->label('Deskripsi')
+                    ->limit(50)
+                    ->searchable()
+                    ->placeholder('-'),
+
+                Tables\Columns\TextColumn::make('menus_count')
+                    ->label('Jumlah Menu')
+                    ->counts('menus')
+                    ->sortable()
+                    ->badge(),
+
                 Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                    ->label('Dibuat')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('nama_kategori', 'asc')
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->label('Lihat'),
+
+                Tables\Actions\EditAction::make()
+                    ->label('Edit'),
+
+                Tables\Actions\DeleteAction::make()
+                    ->label('Hapus'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->label('Hapus Terpilih'),
                 ]),
             ]);
     }
@@ -71,6 +118,7 @@ class KategoriMenuResource extends Resource
         return [
             'index' => Pages\ListKategoriMenus::route('/'),
             'create' => Pages\CreateKategoriMenu::route('/create'),
+            'view' => Pages\ViewKategoriMenu::route('/{record}'),
             'edit' => Pages\EditKategoriMenu::route('/{record}/edit'),
         ];
     }

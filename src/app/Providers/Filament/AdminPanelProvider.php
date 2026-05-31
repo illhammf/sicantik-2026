@@ -53,6 +53,8 @@ class AdminPanelProvider extends PanelProvider
             ])
             ->navigationGroups([
                 NavigationGroup::make()
+                    ->label('Manajemen Catering'),
+                NavigationGroup::make()
                     ->label('Administration'),
             ])
             ->userMenuItems([
