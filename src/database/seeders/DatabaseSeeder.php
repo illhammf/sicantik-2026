@@ -16,6 +16,14 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
             UserSeeder::class,
+            KategoriMenuSeeder::class,
+            MenuSeeder::class,
+            PelangganSeeder::class,
+            PesananSeeder::class,
+            DetailPesananSeeder::class,
+            PembayaranSeeder::class,
+            UlasanSeeder::class,
+            PesanKontakSeeder::class,
         ]);
     }
 }
