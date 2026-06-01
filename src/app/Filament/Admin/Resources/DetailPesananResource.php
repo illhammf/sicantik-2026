@@ -14,7 +14,7 @@ class DetailPesananResource extends Resource
 {
     protected static ?string $model = DetailPesanan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+    protected static ?string $navigationIcon = 'heroicon-s-list-bullet';
 
     protected static ?string $navigationGroup = 'Manajemen Catering';
 
@@ -25,6 +25,11 @@ class DetailPesananResource extends Resource
     protected static ?string $pluralModelLabel = 'Detail Pesanan';
 
     protected static ?int $navigationSort = 5;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

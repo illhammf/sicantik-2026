@@ -14,7 +14,7 @@ class MenuResource extends Resource
 {
     protected static ?string $model = Menu::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-cake';
+    protected static ?string $navigationIcon = 'heroicon-s-cake';
 
     protected static ?string $navigationGroup = 'Manajemen Catering';
 
@@ -25,6 +25,11 @@ class MenuResource extends Resource
     protected static ?string $pluralModelLabel = 'Menu Catering';
 
     protected static ?int $navigationSort = 2;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
@@ -61,11 +66,15 @@ class MenuResource extends Resource
                             ->default('Tersedia')
                             ->required(),
 
-                        Forms\Components\TextInput::make('gambar')
-                            ->label('Gambar')
-                            ->placeholder('Contoh: nasi-box.jpg')
-                            ->maxLength(255)
-                            ->default(null),
+                        Forms\Components\FileUpload::make('gambar')
+                            ->label('Gambar Menu')
+                            ->image()
+                            ->imageEditor()
+                            ->directory('menu')
+                            ->disk('public')
+                            ->visibility('public')
+                            ->nullable()
+                            ->columnSpanFull(),
 
                         Forms\Components\Textarea::make('deskripsi')
                             ->label('Deskripsi')
@@ -113,10 +122,12 @@ class MenuResource extends Resource
                     ->searchable()
                     ->placeholder('-'),
 
-                Tables\Columns\TextColumn::make('gambar')
+                Tables\Columns\ImageColumn::make('gambar')
                     ->label('Gambar')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->disk('public')
+                    ->height(60)
+                    ->width(60)
+                    ->circular(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Dibuat')

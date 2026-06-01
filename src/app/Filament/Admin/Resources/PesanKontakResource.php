@@ -14,7 +14,7 @@ class PesanKontakResource extends Resource
 {
     protected static ?string $model = PesanKontak::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-envelope';
+    protected static ?string $navigationIcon = 'heroicon-s-envelope';
 
     protected static ?string $navigationGroup = 'Manajemen Catering';
 
@@ -25,6 +25,11 @@ class PesanKontakResource extends Resource
     protected static ?string $pluralModelLabel = 'Pesan Kontak';
 
     protected static ?int $navigationSort = 8;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

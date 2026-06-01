@@ -14,7 +14,7 @@ class PembayaranResource extends Resource
 {
     protected static ?string $model = Pembayaran::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-credit-card';
+    protected static ?string $navigationIcon = 'heroicon-s-credit-card';
 
     protected static ?string $navigationGroup = 'Manajemen Catering';
 
@@ -25,6 +25,11 @@ class PembayaranResource extends Resource
     protected static ?string $pluralModelLabel = 'Pembayaran';
 
     protected static ?int $navigationSort = 6;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

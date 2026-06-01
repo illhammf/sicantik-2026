@@ -55,6 +55,8 @@ class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Manajemen Catering'),
                 NavigationGroup::make()
+                    ->label('Pengaturan Website'),
+                NavigationGroup::make()
                     ->label('Administration'),
             ])
             ->userMenuItems([
@@ -87,8 +89,8 @@ class AdminPanelProvider extends PanelProvider
                     ->showEmptyPanelOnMobile(false)
                     ->formPanelPosition('right')
                     ->formPanelWidth('40%')
-                    ->emptyPanelBackgroundImageOpacity('70%')
-                    ->emptyPanelBackgroundImageUrl('https://picsum.photos/seed/picsum/1260/750.webp/?blur=1'),
+                    ->emptyPanelBackgroundImageOpacity('90%')
+                    ->emptyPanelBackgroundImageUrl(asset('front/img/bg-login.jpg')),
                 \Awcodes\LightSwitch\LightSwitchPlugin::make()
                     ->position(\Awcodes\LightSwitch\Enums\Alignment::BottomCenter)
                     ->enabledOn([

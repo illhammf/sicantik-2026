@@ -14,7 +14,7 @@ class PesananResource extends Resource
 {
     protected static ?string $model = Pesanan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static ?string $navigationIcon = 'heroicon-s-shopping-bag';
 
     protected static ?string $navigationGroup = 'Manajemen Catering';
 
@@ -25,6 +25,11 @@ class PesananResource extends Resource
     protected static ?string $pluralModelLabel = 'Pesanan';
 
     protected static ?int $navigationSort = 4;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {

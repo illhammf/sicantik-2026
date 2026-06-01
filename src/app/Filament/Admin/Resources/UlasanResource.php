@@ -14,7 +14,7 @@ class UlasanResource extends Resource
 {
     protected static ?string $model = Ulasan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-star';
+    protected static ?string $navigationIcon = 'heroicon-s-star';
 
     protected static ?string $navigationGroup = 'Manajemen Catering';
 
@@ -25,6 +25,11 @@ class UlasanResource extends Resource
     protected static ?string $pluralModelLabel = 'Ulasan';
 
     protected static ?int $navigationSort = 7;
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
 
     public static function form(Form $form): Form
     {
