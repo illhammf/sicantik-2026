@@ -392,6 +392,48 @@ filterButtons.forEach(btn => {
 });
 
 // ============================================================
+// USER DROPDOWN
+// ============================================================
+
+const dropdownBtn = document.getElementById('userDropdownBtn');
+const dropdown = document.getElementById('userDropdown');
+
+if (dropdownBtn && dropdown) {
+    dropdownBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle('open');
+    });
+
+    document.addEventListener('click', (e) => {
+        if (!dropdown.contains(e.target) && !dropdownBtn.contains(e.target)) {
+            dropdown.classList.remove('open');
+        }
+    });
+}
+
+// ============================================================
+// SYNC CART BADGE (for duplicate badges)
+// ============================================================
+
+const cartBadge2 = document.getElementById('cartBadge2');
+const _origUpdateUI = updateCartUI;
+
+updateCartUI = function() {
+    _origUpdateUI();
+
+    const cart = getCart();
+    const totalItems = cart.reduce((sum, item) => sum + item.jumlah, 0);
+    if (cartBadge2) cartBadge2.textContent = totalItems;
+};
+
+// Also hook cartToggle2
+document.getElementById('cartToggle2')?.addEventListener('click', () => {
+    document.getElementById('cartSidebar')?.classList.add('active');
+    document.getElementById('cartOverlay')?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+});
+
+// ============================================================
 // INIT
 // ============================================================
 

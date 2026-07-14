@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 use App\Models\KategoriMenu;
 use App\Models\Menu;
@@ -48,7 +49,7 @@ Route::middleware('guest:pelanggan')->group(function () {
 
         if (Auth::guard('pelanggan')->attempt($credentials, $request->boolean('remember'))) {
             $request->session()->regenerate();
-            return redirect()->intended('/');
+            return redirect()->intended(route('pelanggan.dashboard'));
         }
 
         return back()->withErrors([
@@ -80,7 +81,7 @@ Route::middleware('guest:pelanggan')->group(function () {
 
         Auth::guard('pelanggan')->login($pelanggan);
 
-        return redirect('/')->with('success', 'Registrasi berhasil! Selamat datang ' . $pelanggan->nama);
+        return redirect(route('pelanggan.dashboard'))->with('success', 'Registrasi berhasil! Selamat datang ' . $pelanggan->nama);
     });
 });
 
@@ -90,6 +91,95 @@ Route::post('/logout', function (Request $request) {
     $request->session()->regenerateToken();
     return redirect('/');
 })->name('pelanggan.logout');
+
+/*
+|--------------------------------------------------------------------------
+| Pelanggan Dashboard (Area Pelanggan)
+|--------------------------------------------------------------------------
+*/
+
+Route::middleware('auth:pelanggan')->prefix('dashboard')->name('pelanggan.')->group(function () {
+    Route::get('/', function () {
+        $pelanggan = Auth::guard('pelanggan')->user();
+        $pesananSemua = $pelanggan->pesanans()->with('detailPesanans')->latest()->get();
+
+        return view('pelanggan.dashboard', [
+            'pengaturan' => PengaturanWebsite::first(),
+            'totalPesanan' => $pesananSemua->count(),
+            'pesananDiproses' => $pesananSemua->whereIn('status', ['Baru', 'Diproses'])->count(),
+            'pesananSelesai' => $pesananSemua->where('status', 'Selesai')->count(),
+            'ratingRata' => $pelanggan->ulasans()->avg('rating') ?? 0,
+            'pesananTerbaru' => $pesananSemua->take(5),
+        ]);
+    })->name('dashboard');
+
+    Route::get('/pesanan', function (Request $request) {
+        $pelanggan = Auth::guard('pelanggan')->user();
+        $query = $pelanggan->pesanans()->with('detailPesanans');
+
+        if ($request->status) {
+            $query->where('status', $request->status);
+        }
+
+        return view('pelanggan.pesanan.index', [
+            'pengaturan' => PengaturanWebsite::first(),
+            'pesanans' => $query->latest()->get(),
+        ]);
+    })->name('pesanan');
+
+    Route::get('/pesanan/{id}', function ($id) {
+        $pelanggan = Auth::guard('pelanggan')->user();
+        $pesanan = $pelanggan->pesanans()->with('detailPesanans.menu')->findOrFail($id);
+
+        return view('pelanggan.pesanan.show', [
+            'pengaturan' => PengaturanWebsite::first(),
+            'pesanan' => $pesanan,
+        ]);
+    })->name('pesanan.show');
+
+    Route::get('/profil', function () {
+        $pelanggan = Auth::guard('pelanggan')->user();
+
+        return view('pelanggan.profil', [
+            'pengaturan' => PengaturanWebsite::first(),
+            'pelanggan' => $pelanggan,
+            'totalPesanan' => $pelanggan->pesanans()->count(),
+            'totalUlasan' => $pelanggan->ulasans()->count(),
+        ]);
+    })->name('profil');
+
+    Route::put('/profil', function (Request $request) {
+        $pelanggan = Auth::guard('pelanggan')->user();
+
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'email' => 'required|email|unique:pelanggans,email,' . $pelanggan->id,
+            'no_hp' => 'required|string|max:20',
+            'alamat' => 'required|string',
+        ]);
+
+        $pelanggan->update($request->only(['nama', 'email', 'no_hp', 'alamat']));
+
+        return redirect()->route('pelanggan.profil')->with('profile_updated', true)->with('success', 'Profil berhasil diperbarui!');
+    })->name('profil.update');
+
+    Route::put('/password', function (Request $request) {
+        $pelanggan = Auth::guard('pelanggan')->user();
+
+        $request->validate([
+            'current_password' => 'required',
+            'new_password' => 'required|string|min:6|confirmed',
+        ]);
+
+        if (!Hash::check($request->current_password, $pelanggan->password)) {
+            return back()->withErrors(['current_password' => 'Password saat ini salah.']);
+        }
+
+        $pelanggan->update(['password' => bcrypt($request->new_password)]);
+
+        return redirect()->route('pelanggan.profil')->with('password_updated', true)->with('success', 'Password berhasil diganti!');
+    })->name('password.update');
+});
 
 /*
 |--------------------------------------------------------------------------
