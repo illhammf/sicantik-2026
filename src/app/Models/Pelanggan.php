@@ -2,16 +2,25 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Pelanggan extends Model
+class Pelanggan extends Authenticatable
 {
+    use Notifiable;
+
     protected $fillable = [
         'nama',
         'email',
         'no_hp',
         'alamat',
+        'password',
+    ];
+
+    protected $hidden = [
+        'password',
+        'remember_token',
     ];
 
     public function pesanans(): HasMany

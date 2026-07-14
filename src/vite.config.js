@@ -6,28 +6,11 @@ export default defineConfig({
             input: [
                 "resources/css/app.css",
                 "resources/js/app.js",
+                "resources/css/front.css",
+                "resources/js/front.js",
                 `resources/css/filament/admin/theme.css`,
             ],
             refresh: true,
         }),
     ],
-
-    // build: {
-    //     chunkSizeWarningLimit: 500,
-    //     cssCodeSplit: true,
-    //     reportCompressedSize: false,
-    //     rollupOptions: {
-    //         output: {
-    //             manualChunks(id) {
-    //                 if (id.includes("node_modules")) {
-    //                     return id
-    //                         .toString()
-    //                         .split("node_modules/")[1]
-    //                         .split("/")[0]
-    //                         .toString();
-    //                 }
-    //             },
-    //         },
-    //     },
-    // },
 });
